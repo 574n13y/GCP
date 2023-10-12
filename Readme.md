@@ -1,59 +1,89 @@
 ##                                                                                  GCP Commands
 
-## Google Cloud Shell & gcloud
-Google Cloud Shell provides: command-line access to computing resources hosted on Google Cloud Platform and is available in the Google Cloud Platform Console.
-
-It makes it easy for you to manage your projects and resources without having to install the Google Cloud SDK and other tools on your laptop.
-
-With Cloud Shell, the Cloud SDK gcloud commands and other utilities you need are always available when you need them.
+# Google Cloud Shell & gcloud
 
 ## Setup and Requirements
-Confirm that you are authenticated
+
+* Confirm that you are authenticated
+
+```
 gcloud auth list
-## Show & active your project
+```
+
+### Show & active your project
+
+```
 gcloud config list project
+```
+
 if not, you can set it:
 
+```
 gcloud config set project <PROJECT_ID>
-or
+```
 
-export PROJECT_ID=$(gcloud info --format='value(config.project)')
+or 
+
+`export PROJECT_ID=$(gcloud info --format='value(config.project)')`
 
 If you already have selected your project before opening CloudShell.
 
-## Set up your zone
-gcloud config set compute/zone us-west1-b
+### Set up your zone
 
-First command line
+`gcloud config set compute/zone us-west1-b`
+
+## First command line
+
 After Cloud Shell launches, you can use the command line to invoke the Cloud SDK gcloud command or other tools available on the virtual machine instance.
 
-You can also use your $HOME directory in persistent disk storage to store files across projects and between Cloud Shell sessions. Your $HOME directory is private to you and cannot be accessed by other users.
+> You can also use your `$HOME` directory in persistent disk storage to store files across projects and between Cloud Shell sessions. Your `$HOME` directory is private to you and cannot be accessed by other users.
 
-gcloud -h
-gcloud config --help or gcloud help config
-gcloud config list or more detailled like gcloud config list --all
+* `gcloud -h`
+* `gcloud config --help` or `gcloud help config`
+* `gcloud config list` or more detailled like `gcloud config list --all`
 
 
 ## Create VPC 
+```
 gcloud compute networks create stanley-vpc --subnet-mode custom
+```
+```
 gcloud compute networks subnets create stanley-wp --network=stanley-vpc --region us-east1 --range=192.168.16.0/20
+```
+```
 gcloud compute networks subnets create stanley-mgmt --network=stanley-vpc --region us-east1 --range=192.168.32.0/20
+```
 
 ## Creating VM
+```
 gcloud compute instances create managementnet-us-vm --zone=us-west3-b --machine-type=e2-micro --subnet=privatesubnet-us --image-family=debian-11 --image-project=debian-cloud --boot-disk-size=10GB --boot-disk-type=pd-standard --boot-disk-device-name=privatenet-us-vm
+```
+```
 gcloud compute instances create privatenet-us-vm --zone=us-west3-b --machine-type=e2-micro --subnet=privatesubnet-us --image-family=debian-11 --image-project=debian-cloud --boot-disk-size=10GB --boot-disk-type=pd-standard --boot-disk-device-name=privatenet-us-vm
+```
 
 ## Creating Firewalls 
+```
 gcloud compute firewall-rules create managementnet-allow-icmp-ssh-rdp --direction=INGRESS --priority=1000 --network=managementnet --action=ALLOW --rules=icmp,tcp:22,tcp:3389 --source-ranges=0.0.0.0/0
+```
+```
 gcloud compute firewall-rules create privatenet-allow-icmp-ssh-rdp --direction=INGRESS --priority=1000 --network=privatenet --action=ALLOW --rules=icmp,tcp:22,tcp:3389 --source-ranges=0.0.0.0/0
+```
 
 ## Create bastion host
+```
 gcloud compute instances create bastion --network-interface=network=stanley-vpc,subnet=stanley-mgmt --network-interface=network=stanley-prod-vpc,subnet=stanley-prod-mgmt --tags=ssh --zone=us-east1-b
+```
+```
 gcloud compute firewall-rules create fw-ssh-dev --source-ranges=0.0.0.0/0 --target-tags ssh --allow=tcp:22 --network=stanley-vpc
+```
+```
 gcloud compute firewall-rules create fw-ssh-prod --source-ranges=0.0.0.0/0 --target-tags ssh --allow=tcp:22 --network=stanley-prod-vpc
+```
 
 
 ## Create and configure Cloud SQL Instance
+```
 gcloud sql instances create stanley-db --root-password password --region=us-east1
 gcloud sql connect stanley-db
 CREATE DATABASE wordpress;
@@ -61,22 +91,24 @@ GRANT ALL PRIVILEGES ON wordpress.* TO "wp_user"@"%" IDENTIFIED BY "stormwind_ru
 FLUSH PRIVILEGES;
 
 exit
-
+```
 ## Create Kubernetes cluster
+```
 gcloud container clusters create stanley \
  --network stanley-vpc \
  --subnetwork stanley-wp \
  --machine-type n1-standard-4 \
  --num-nodes 2 \
  --zone us-east1-b
-
+```
 gcloud container clusters get-credentials stanley --zone us-east1-b
 cd ~/
 
 ## Create a WordPress deployment
+```
 kubectl create -f wp-deployment.yaml
 kubectl create -f wp-service.yaml
-
+```
 
 
 ![lab1](https://github.com/574n13y/GCP/assets/35293085/8222bd5c-bdb1-4984-9982-982f1405f39c)
