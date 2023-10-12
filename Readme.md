@@ -1,6 +1,6 @@
-##                                                                                  GCP Commands
+# GCP Commands
 
-# Google Cloud Shell & gcloud
+## Google Cloud Shell & gcloud
 
 ## Setup and Requirements
 
