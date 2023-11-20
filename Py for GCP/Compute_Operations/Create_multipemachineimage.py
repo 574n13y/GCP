@@ -7,7 +7,7 @@ import time
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "key.json"
 
 compute = googleapiclient.discovery.build('compute', 'v1')
-project = 'vivesh-1097'
+project = 'vivesh-1907'
 zone = 'us-central1-a'
 machineimage_name = "test-1"
 now = datetime.now()
