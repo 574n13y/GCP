@@ -3,7 +3,7 @@ import os
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "key.json"
 
-project_id = '<Your project id>'
+project_id = '<vivesh-1907>'
 bucket_name = 'bkt-dev-006'
 
 storage_client = storage.Client()
