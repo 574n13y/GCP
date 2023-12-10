@@ -1,5 +1,5 @@
 
-variable "path" {default = "/home/udemy/terraform/credentials"}
+variable "path" {default = "/home/terraform/credentials"}
 
 provider "google" {
     project = "festive-zoo-239708"
